@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>茶器馆 - 茶语交互博物馆</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Microsoft YaHei", "SimHei", sans-serif;
+            background-color: #f5f8f2; /* 更柔和的背景色 */
+            color: #1a3d1a;
+            line-height: 1.7;
+        }
+        
+        /* 页面容器：放宽宽度+居中，增加呼吸感 */
+        .container {
+            width: 90%;
+            max-width: 1400px; /* 从1200px放宽到1400px */
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0 1rem;
+        }
+        
+        /* 导航菜单：优化间距+质感 */
+        .nav-menu {
+            background-color: rgba(255, 255, 255, 0.98);
+            padding: 1.5rem 0; /* 增大上下内边距 */
+            box-shadow: 0 3px 15px rgba(26, 61, 26, 0.08); /* 更柔和的阴影 */
+            margin-bottom: 2rem;
+        }
+        
+        .nav-menu ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 4rem; /* 增大导航项间距 */
+        }
+        
+        .nav-menu a {
+            text-decoration: none;
+            color: #1a3d1a;
+            font-weight: 500;
+            font-size: 1.1rem; /* 增大导航字体 */
+            padding: 0.8rem 1.5rem; /* 增大点击区域 */
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background-color: #1a3d1a;
+            color: #f8fffa;
+            box-shadow: 0 4px 12px rgba(26, 61, 26, 0.2);
+        }
+        
+        /* 主内容区域：增大上下内边距 */
+        .main-content {
+            flex: 1;
+            padding: 3rem 0; /* 从2rem调到3rem */
+            text-align: center;
+        }
+        
+        /* 标题层级：强化视觉区分 */
+        .page-title {
+            font-size: 3rem; /* 从2.5rem增大到3rem */
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            color: #1a3d1a;
+            letter-spacing: 2px; /* 增加字间距 */
+        }
+        
+        .page-subtitle {
+            font-size: 1.2rem; /* 增大副标题字体 */
+            color: #4d704d; /* 更柔和的文字色 */
+            margin-bottom: 4rem; /* 从3rem调到4rem，拉开与下方内容的距离 */
+            line-height: 1.8;
+        }
+        
+        /* 茶器交互区域：增大间距+宽布局 */
+        .teaware-interactive {
+            display: flex;
+            justify-content: center;
+            gap: 5rem; /* 从3rem增大到5rem */
+            margin: 4rem auto; /* 从2rem调到4rem */
+            max-width: 1200px; /* 放宽交互区域宽度 */
+            align-items: flex-start; /* 避免元素被拉伸 */
+        }
+        
+        /* 茶器模型区：增大内边距+圆角+质感 */
+        .teaware-model {
+            flex: 1;
+            min-width: 350px; /* 保证最小宽度，避免太窄 */
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px; /* 从15px增大到20px */
+            padding: 3rem; /* 从2rem调到3rem */
+            box-shadow: 0 8px 25px rgba(26, 61, 26, 0.08); /* 更柔和的阴影 */
+        }
+        
+        .teaware-image {
+            width: 320px; /* 增大茶器模型尺寸 */
+            height: 420px;
+            background: linear-gradient(135deg, #e8f5e8, #d0e8d0);
+            border-radius: 15px;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: inset 0 4px 12px rgba(26, 61, 26, 0.05); /* 增加内阴影质感 */
+        }
+        
+        /* 茶器部件：优化交互区域 */
+        .teaware-part {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px dashed #1a3d1a;
+            border-radius: 8px; /* 增大圆角 */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem; /* 增大部件文字 */
+            color: #1a3d1a;
+            padding: 0.5rem; /* 增加内边距，避免文字拥挤 */
+        }
+        
+        .teaware-part:hover {
+            background: rgba(26, 61, 26, 0.15);
+            border: 2px solid #1a3d1a;
+            transform: scale(1.05); /*  hover时轻微放大，增强交互感 */
+        }
+        
+        .teaware-part.active {
+            background: rgba(26, 61, 26, 0.25);
+            border: 2px solid #1a3d1a;
+            box-shadow: 0 0 12px rgba(26, 61, 26, 0.3);
+        }
+        
+        /* 部件位置：适配增大后的茶器模型 */
+        .part-lid {
+            top: 10%;
+            left: 35%;
+            width: 30%;
+            height: 8%;
+        }
+        
+        .part-body {
+            top: 20%;
+            left: 25%;
+            width: 50%;
+            height: 50%;
+        }
+        
+        .part-handle {
+            top: 30%;
+            left: 10%;
+            width: 15%;
+            height: 30%;
+        }
+        
+        .part-spout {
+            top: 30%;
+            left: 75%;
+            width: 15%;
+            height: 30%;
+        }
+        
+        .part-base {
+            top: 72%;
+            left: 30%;
+            width: 40%;
+            height: 5%;
+        }
+        
+        /* 部件信息区：增大宽度+内边距 */
+        .part-info {
+            flex: 1.2; /* 增大信息区占比 */
+            min-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 8px 25px rgba(26, 61, 26, 0.08);
+            text-align: left;
+        }
+        
+        .part-info h3 {
+            color: #1a3d1a;
+            font-size: 1.8rem; /* 增大信息标题 */
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e8f5e8;
+            padding-bottom: 1rem; /* 增大下划线间距 */
+        }
+        
+        .info-default {
+            text-align: center;
+            color: #4d704d;
+            font-style: italic;
+            font-size: 1.1rem; /* 增大默认提示文字 */
+            padding: 2rem 0; /* 增加内边距，避免拥挤 */
+        }
+        
+        /* 茶之板块：优化布局+卡片质感 */
+        .category-display {
+            margin: 5rem auto; /* 增大上下间距 */
+            max-width: 1100px;
+            text-align: center;
+        }
+        
+        .category-display h3 {
+            font-size: 1.6rem;
+            color: #1a3d1a;
+            margin-bottom: 3rem; /* 拉开与卡片的距离 */
+        }
+        
+        .category-cards {
+            display: flex;
+            justify-content: center;
+            gap: 4rem; /* 增大卡片间距 */
+            flex-wrap: wrap; /* 小屏自动换行 */
+        }
+        
+        .category-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem; /* 从1.5rem调到2rem */
+            width: 280px; /* 增大卡片宽度 */
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(26, 61, 26, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-8px); /* 增大hover上移距离 */
+            box-shadow: 0 12px 30px rgba(26, 61, 26, 0.12);
+        }
+        
+        .category-icon {
+            width: 90px; /* 增大图标尺寸 */
+            height: 90px;
+            background: #e8f5e8;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem; /* 增大图标与文字的间距 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a3d1a;
+            font-size: 2.5rem; /* 增大图标字体 */
+            box-shadow: 0 4px 12px rgba(26, 61, 26, 0.08);
+        }
+        
+        .category-name {
+            font-size: 1.3rem; /* 增大卡片文字 */
+            color: #1a3d1a;
+            margin-bottom: 0.8rem;
+        }
+
+        /* 视频展示区域：强化层次感+宽松布局 */
+        .teaware-video {
+            margin: 5rem auto; /* 从4rem调到5rem */
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 3rem; /* 从2rem调到3rem */
+            box-shadow: 0 8px 25px rgba(26, 61, 26, 0.08);
+        }
+        
+        .teaware-video h3 {
+            color: #1a3d1a;
+            font-size: 1.8rem; /* 增大视频标题 */
+            margin-bottom: 2rem; /* 从1.5rem调到2rem */
+            text-align: center;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9比例 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(26, 61, 26, 0.08);
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 15px;
+        }
+        
+        /* 页脚：优化间距+质感 */
+        .footer {
+            text-align: center;
+            padding: 3rem 0; /* 从2rem调到3rem */
+            background-color: rgba(26, 61, 26, 0.05);
+            margin-top: auto;
+            margin-top: 4rem; /* 拉开与内容的距离 */
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+        
+        .footer p {
+            color: #4d704d;
+            font-size: 1rem; /* 增大页脚文字 */
+            line-height: 1.8;
+        }
+        
+        /* 响应式适配：保证小屏不拥挤 */
+        @media (max-width: 1200px) {
+            .teaware-interactive {
+                flex-direction: column;
+                align-items: center;
+                gap: 3rem;
+            }
+            .category-cards {
+                gap: 3rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.5rem;
+            }
+            .nav-menu ul {
+                gap: 2rem;
+                flex-wrap: wrap;
+            }
+            .teaware-model, .part-info {
+                min-width: 100%;
+            }
+            .category-card {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航菜单 -->
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="index.html">首页</a></li>
+                <li><a href="茶俗.html">茶俗馆</a></li>
+                <li><a href="茶艺.html">茶艺馆</a></li>
+                <li><a href="teaware.html" class="active">茶器馆</a></li>
+            </ul>
+        </nav>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <h1 class="page-title">茶器馆</h1>
+            <p class="page-subtitle">点击茶器部件，了解其用途与制作工艺</p>
+            
+            <!-- 茶器交互区域 -->
+            <div class="teaware-interactive">
+                <!-- 茶器模型 -->
+                <div class="teaware-model">
+                    <div class="teaware-image">
+                        <div class="teaware-part part-lid" data-part="lid">壶盖</div>
+                        <div class="teaware-part part-body" data-part="body">壶身</div>
+                        <div class="teaware-part part-handle" data-part="handle">壶把</div>
+                        <div class="teaware-part part-spout" data-part="spout">壶嘴</div>
+                        <div class="teaware-part part-base" data-part="base">壶底</div>
+                    </div>
+                </div>
+                
+                <!-- 部件信息显示 -->
+                <div class="part-info">
+                    <div class="info-default">
+                        <h3>茶器交互指南</h3>
+                        <p>请点击左侧茶器的任意部件</p>
+                        <p>查看该部件的详细用途解析和工艺展示</p>
+                    </div>
+                    
+                    <!-- 动态内容将由JavaScript填充 -->
+                    <div id="dynamic-content"></div>
+                </div>
+            </div>
+
+            <!-- 茶之板块（优化布局） -->
+            <div class="category-display">
+                <h3>茶之板块</h3>
+                <div class="category-cards">
+                    <!-- 1. 茶之道 -->
+                    <a href="ceremony.html" style="text-decoration: none; color: inherit;">
+                        <div class="category-card">
+                            <div class="category-icon">📜</div>
+                            <div class="category-name">茶之道</div>
+                        </div>
+                    </a>
+                    <!-- 2. 茶之源 -->
+                    <a href="origin.html" style="text-decoration: none; color: inherit;">
+                        <div class="category-card">
+                            <div class="category-icon">🌱</div>
+                            <div class="category-name">茶之源</div>
+                        </div>
+                    </a>
+                    <!-- 3. 茶之品 -->
+                    <a href="varieties.html" style="text-decoration: none; color: inherit;">
+                        <div class="category-card">
+                            <div class="category-icon">🍵</div>
+                            <div class="category-name">茶之品</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 视频展示区域 -->
+            <div class="teaware-video">
+                <h3>茶器制作工艺展示</h3>
+                <div class="video-container">
+                    <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=758254825&bvid=BV1P64y1o7RZ&cid=344898129&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p>&copy; 2025 茶语交互博物馆</p>
+            <p>品茗知味 · 悟茶懂心</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // MP3音效配置
+            const YOUR_MP3_FILE = 'res/click.mp3'; 
+            const audio = new Audio(YOUR_MP3_FILE);
+            audio.preload = 'auto'; 
+            
+            function playYourMp3Sound() {
+                audio.currentTime = 0;
+                audio.play().catch(e => {
+                    console.log('音效播放提示：', e.message);
+                    if (e.name === 'NotAllowedError') {
+                        alert('请先点击页面任意位置激活音频播放');
+                    }
+                });
+            }
+
+            // 茶器部件交互逻辑
+            const parts = document.querySelectorAll('.teaware-part');
+            const dynamicContent = document.getElementById('dynamic-content');
+            const infoDefault = document.querySelector('.info-default');
+            
+            const partDetails = {
+                'lid': {
+                    title: '壶盖',
+                    usage: '用于覆盖壶口，保持茶汤温度，防止香气散失。',
+                    craft: '壶盖需与壶口紧密贴合，旋转顺畅。常见有压盖、嵌盖、截盖三种形式。制作时需考虑气密性和美观性。',
+                    material: '紫砂、陶瓷、玻璃等'
+                },
+                'body': {
+                    title: '壶身',
+                    usage: '容纳茶叶和热水，是茶叶与水交融的主要空间。',
+                    craft: '壶身造型多样，有圆形、方形、筋纹形等。制作需考虑容量、受热面积和持握舒适度。紫砂壶身具有双重气孔结构，透气性好。',
+                    material: '紫砂、陶瓷、金属等'
+                },
+                'handle': {
+                    title: '壶把',
+                    usage: '用于持握茶壶，倒水时提供支撑。',
+                    craft: '设计需符合人体工学，持握舒适。常见有端把、横把、提梁三种形式。制作时需平衡美观与实用性。',
+                    material: '与壶身相同材质或搭配竹木等'
+                },
+                'spout': {
+                    title: '壶嘴',
+                    usage: '引导茶汤流出，控制水流大小和方向。',
+                    craft: '要求出水流畅、断水利落。造型有直嘴、一弯嘴、二弯嘴、三弯嘴等。内壁需光滑，避免茶渍积累。',
+                    material: '与壶身一体成型'
+                },
+                'base': {
+                    title: '壶底',
+                    usage: '支撑壶身，保持茶壶稳定放置。',
+                    craft: '常见有钉足、圈足、加底三种形式。设计需考虑稳定性与美观，同时便于清洁。',
+                    material: '与壶身相同材质'
+                }
+            };
+            
+            parts.forEach(part => {
+                part.addEventListener('click', function() {
+                    playYourMp3Sound();
+                    const partId = this.getAttribute('data-part');
+                    const detail = partDetails[partId];
+                    
+                    parts.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    infoDefault.style.display = 'none';
+                    
+                    dynamicContent.innerHTML = `
+                        <h3>${detail.title}</h3>
+                        <p><strong>主要用途：</strong>${detail.usage}</p>
+                        <p><strong>制作工艺：</strong>${detail.craft}</p>
+                        <p><strong>常见材质：</strong>${detail.material}</p>
+                    `;
+                    dynamicContent.style.display = 'block';
+                });
+            });
+            
+            // 页面加载动画
+            const pageTitle = document.querySelector('.page-title');
+            pageTitle.style.opacity = '0';
+            pageTitle.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                pageTitle.style.transition = 'all 0.8s ease';
+                pageTitle.style.opacity = '1';
+                pageTitle.style.transform = 'translateY(0)';
+            }, 300);
+        });
+    </script>
+</body>
+</html>
